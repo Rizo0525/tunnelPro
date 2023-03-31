@@ -1,5 +1,5 @@
 var v_position;
-var u_Matrix
+var u_Matrix;
 var f_color;
 var vertexBuffer;
 var indexBufferTriangles;

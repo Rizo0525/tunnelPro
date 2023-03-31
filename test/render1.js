@@ -27,18 +27,21 @@ function initShader(gl){
     gl.shaderSource(fragmentShader, shaderSource.fragment)
     gl.compileShader(fragmentShader)
 
-    shaderProgram = gl.createProgram()
-    gl.attachShader(shaderProgram, vertexShader)
-    gl.attachShader(shaderProgram, fragmentShader)
-    gl.linkProgram(shaderProgram)
-
-    v_position = gl.getAttribLocation(shaderProgram,'v_position')
-    u_Matrix = gl.getUniformLocation(shaderProgram, 'u_Matrix')
-    f_color = gl.getUniformLocation(shaderProgram, 'f_color')
+    var program = gl.createProgram()
+    gl.attachShader(program, vertexShader)
+    gl.attachShader(program, fragmentShader)
+    gl.linkProgram(program)
+    gl.useProgram(program)
+    
+    return program
 }
 function initialize(gl,obj){
     createBufferObject(gl,obj)
-    initShader(gl)
+    shaderProgram = initShader(gl)
+    console.log(shaderProgram)
+    v_position = gl.getAttribLocation(shaderProgram,'v_position')
+    u_Matrix = gl.getUniformLocation(shaderProgram, 'u_Matrix')
+    f_color = gl.getUniformLocation(shaderProgram, 'f_color')
 }
 function createObj(){
 
@@ -71,27 +74,27 @@ function drawobj(canvas,gl,obj){
 	gl.clearColor(0.309, 0.505, 0.74, 1.0);
 	gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-    var projMat = SpiderGL.Math.Mat4.perspective(0.8,width/height,0.1,120)
+    var projMat = SpiderGL.Math.Mat4.perspective(0.8,width/height,1,6000)
     var viewMat;
     if(obj.name==='cube'){
 		viewMat = SpiderGL.Math.Mat4.lookAt([0,2,6], [0,0,0], [0,1,0]);
         deg = 0.1;
-    }else if (obj.name == "sphere") {
+    }else if (obj.name === "sphere") {
 		viewMat = SpiderGL.Math.Mat4.lookAt([0,-1,4], [0,0.1,0], [0,1,-1]); 
         deg = 0.1;
 	}
-	else if (obj.name == "cone") {
+	else if (obj.name === "cone") {
 		viewMat = SpiderGL.Math.Mat4.lookAt([0,-1.5,4], [0,0.1,0], [0,1,0]); 
         deg = 0.1;
-	}	
-	else if (obj.name == "circular") {
-		viewMat = SpiderGL.Math.Mat4.lookAt([0,1000,0], [0,-1,0], [0,-100,0]);
+	}
+	else if (obj.name === "circular") {
+		viewMat = SpiderGL.Math.Mat4.lookAt([0,3050,0], [0,0,0], [1,0,0]);
         deg = 0.005
 	}
+
     var modelMat = SpiderGL.Math.Mat4.rotationAngleAxis(SpiderGL.Math.degToRad(-currentDeg),[0,1,0])
     var modelviewprojMat = SpiderGL.Math.Mat4.mul(projMat,SpiderGL.Math.Mat4.mul(viewMat,modelMat))
     gl.enable(gl.DEPTH_TEST)
-    gl.useProgram(shaderProgram)
     gl.uniformMatrix4fv(u_Matrix, false, modelviewprojMat)
 
     drawObject(gl,obj,new Float32Array([0.82, 0.82, 0.82]),new Float32Array([0,0,0]))
