@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        button{
+            width: 70px;
+            height: 30px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button>
+            circular
+        </button>
+        <button>
+            cone
+        </button>
+        <button>
+            cube
+        </button>
+        <button>
+            sphere
+        </button>
+    </div>
+    <canvas id="myCanvas"></canvas>
+    <script src="../lib/spidergl.js"></script>
+    <script src="../lib/spidergl-config.js"></script>
+    <script src="../js/circular.js"></script>
+    <script src="../js/cone.js"></script>
+    <script src="../js/cube.js"></script>
+    <script src="../js/sphere.js"></script>
+    <script src="../js/shader.js"></script>
+    <script src="../js/render.js"></script>
+    <script>
+        var myCanvas = document.getElementById("myCanvas");
+        myCanvas.width = window.innerWidth
+        myCanvas.height = window.innerHeight
+        var gl = myCanvas.getContext('webgl');
+        var render = null
+        console.log(render)
+        var obj = new Cone(1,1,30)
+        initialize(gl,obj)
+        // drawPrimitive(myCanvas,gl,obj)
+        function draw(){
+            drawPrimitive(myCanvas,gl,obj)
+            render = requestAnimationFrame(draw)
+            // console.log(render)
+        }
+        draw()
+        document.querySelector('.container').addEventListener('click',function(e){
+            if(e.target.tagName=='BUTTON'){
+                var type = e.target.innerHTML.trim()
+                var obj
+                if(type === 'circular'){
+                    obj = new Circular(600,5.0)
+                }else if(type === 'cone'){
+                    obj= new Cone(1,1,30)
+                }else if(type === 'cube'){
+                    obj = new Cube()
+                }else if(type === 'sphere'){
+                    obj = new Sphere(20,20)
+                }
+                initialize(gl,obj)
+                function draw(){
+                    drawPrimitive(myCanvas,gl,obj)
+                    render = requestAnimationFrame(draw)
+                }
+                if(render){
+                    cancelAnimationFrame(render)
+                    draw()
+                }
+            }
+        })
+        
+    </script>
+</body>
+</html>
